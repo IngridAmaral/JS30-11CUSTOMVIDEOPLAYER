@@ -27,11 +27,28 @@ function hangleRangeUpdate(){
     video[this.name] = this.value;
 }
 
+function scrub(e){
+    const scrubTime = (e.offsetX / progress.offsetWidth) * video.duration;
+    video.currentTime = scrubTime;
+ }
+
+function handleProgress() {
+    const percent = (video.currentTime / video.duration) * 100;
+    progressBar.style.flexBasis = `${percent}%`; /*changes the value in the css property*/
+}
+
 video.addEventListener('click', togglePlay);
 video.addEventListener('play', buttonUpdate);
 video.addEventListener('pause', buttonUpdate);
+video.addEventListener('timeupdate', handleProgress); /*the handleProgress will be updated based on the current timeupdate of the video*/
 
 toggle.addEventListener('click', togglePlay);
 skipButtons.forEach(skipBtn => skipBtn.addEventListener('click', skip));
 ranges.forEach(range => range.addEventListener('change', hangleRangeUpdate));
 ranges.forEach(range => range.addEventListener('mousemove', hangleRangeUpdate));
+
+let mousedown = false;
+progress.addEventListener('click', scrub);
+progress.addEventListener('mousemove', (e => mousedown && scrub(e))); /*if mousedown is true will run the scrub(e), else won't */
+progress.addEventListener('mousedown', () => mousedown = true);
+progress.addEventListener('mouseup', () => mousedown = false);
